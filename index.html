@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
-
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "e43d22d78a804f23bfbd6043720b2115"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
   <style>
     button {
       margin: 3px;
@@ -25,6 +32,7 @@
     }
   </style>
 </head>
+
 <body>
   <fieldset>
     <legend>Error Calculator</legend>
@@ -62,11 +70,68 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      class InputError extends Error {
+        constructor(message) {
+          super(message);
+          this.name = "InputError";
+        }
+      }
+      try {
+        if (firstNum === "" || secondNum === "") {
+          throw new InputError("Input fields cannot be empty");
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (err) {
+        console.error(err.name + ": " + err.message);
+      } finally {
+        console.log("Calculation complete");
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
     // TODO - Make buttons functional
+    errorBtns[0].addEventListener('click', () => {
+      console.log("Console log demo");
+    });
+    errorBtns[1].addEventListener('click', () => {
+      console.error("Console error demo");
+    });
+    errorBtns[2].addEventListener('click', () => {
+      console.dir(errorBtns[2]);
+    });
+    errorBtns[3].addEventListener('click', () => {
+      console.dirxml(document.getElementById("error-btns"));
+    });
+    errorBtns[4].addEventListener('click', () => {
+      console.group("Console group");
+    });
+    errorBtns[5].addEventListener('click', () => {
+      console.groupEnd("Console group");
+    });
+    errorBtns[6].addEventListener('click', () => {
+      console.table(errorBtns);
+    });
+    errorBtns[7].addEventListener('click', () => {
+      console.time("Timer");
+    });
+    errorBtns[8].addEventListener('click', () => {
+      console.timeEnd("Timer");
+    });
+    errorBtns[9].addEventListener('click', () => {
+      consoleTrace();
+    });
+    function consoleTrace() {
+      console.trace();
+    }
+    errorBtns[10].addEventListener('click', () => {
+      console.log(firstNum); // firstNum is not declared in this scope
+    });
+
+    window.onerror = function (message, source, lineno, colno, error) {
+      //console.log(message);
+      TrackJS.track(message);
+    };
   </script>
 </body>
+
 </html>
